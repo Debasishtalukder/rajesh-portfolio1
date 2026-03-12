@@ -3,8 +3,7 @@ import { GLTF } from "three-stdlib";
 import { eyebrowBoneNames, typingBoneNames } from "../../../data/boneData";
 
 const setAnimations = (gltf: GLTF) => {
-  let character = gltf.scene;
-  let mixer = new THREE.AnimationMixer(character);
+  let mixer = new THREE.AnimationMixer(gltf.scene);
   if (gltf.animations && gltf.animations.length > 0) {
     const introClip = gltf.animations.find(
       (clip) => clip.name === "introAnimation"

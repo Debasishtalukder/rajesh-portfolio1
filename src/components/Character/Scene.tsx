@@ -54,8 +54,11 @@ const Scene = () => {
       let progress = setProgress((value) => setLoading(value));
       const { loadCharacter } = setCharacter(renderer, scene, camera);
 
-      const handleResizeListener = () =>
-        characterScene && handleResize(renderer, camera, canvasDiv, characterScene);
+      const handleResizeListener = () => {
+        if (characterScene) {
+          handleResize(renderer, camera, canvasDiv, characterScene);
+        }
+      };
 
       loadCharacter().then((gltf) => {
         if (gltf) {

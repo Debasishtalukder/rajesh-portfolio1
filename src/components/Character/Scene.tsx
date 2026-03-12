@@ -46,12 +46,16 @@ const Scene = () => {
       let headBone: THREE.Object3D | null = null;
       let screenLight: any | null = null;
       let mixer: THREE.AnimationMixer;
+      let characterScene: THREE.Object3D | null = null;
 
       const clock = new THREE.Clock();
 
       const light = setLighting(scene);
       let progress = setProgress((value) => setLoading(value));
       const { loadCharacter } = setCharacter(renderer, scene, camera);
+
+      const handleResizeListener = () =>
+        characterScene && handleResize(renderer, camera, canvasDiv, characterScene);
 
       loadCharacter().then((gltf) => {
         if (gltf) {
@@ -60,6 +64,7 @@ const Scene = () => {
           mixer = animations.mixer;
           setChar(gltf.scene);
           scene.add(gltf.scene);
+          characterScene = gltf.scene;
           headBone = gltf.scene.getObjectByName("spine006") || null;
           screenLight = gltf.scene.getObjectByName("screenlight") || null;
           progress.loaded().then(() => {
@@ -68,9 +73,7 @@ const Scene = () => {
               animations.startIntro();
             }, 2500);
           });
-          window.addEventListener("resize", () =>
-            handleResize(renderer, camera, canvasDiv, character)
-          );
+          window.addEventListener("resize", handleResizeListener);
         }
       });
 
@@ -129,9 +132,7 @@ const Scene = () => {
         clearTimeout(debounce);
         scene.clear();
         renderer.dispose();
-        window.removeEventListener("resize", () =>
-          handleResize(renderer, camera, canvasDiv, character!)
-        );
+        window.removeEventListener("resize", handleResizeListener);
         if (canvasDiv.current) {
           canvasDiv.current.removeChild(renderer.domElement);
         }

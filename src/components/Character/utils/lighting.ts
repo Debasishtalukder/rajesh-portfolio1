@@ -25,6 +25,8 @@ const setLighting = (scene: THREE.Scene) => {
       scene.environment = texture;
       scene.environmentIntensity = 0;
       scene.environmentRotation.set(5.76, 85.85, 1);
+    }, undefined, function (error) {
+      console.warn("Failed to load HDRI environment:", error);
     });
 
   function setPointLight(screenLight: any) {

@@ -19,7 +19,6 @@ const Scene = () => {
   const sceneRef = useRef(new THREE.Scene());
   const { setLoading } = useLoading();
 
-  const [character, setChar] = useState<THREE.Object3D | null>(null);
   useEffect(() => {
     if (canvasDiv.current) {
       let rect = canvasDiv.current.getBoundingClientRect();
@@ -46,6 +45,7 @@ const Scene = () => {
       let headBone: THREE.Object3D | null = null;
       let screenLight: any | null = null;
       let mixer: THREE.AnimationMixer;
+      let characterScene: THREE.Object3D | null = null;
 
       const clock = new THREE.Clock();
 
@@ -53,25 +53,28 @@ const Scene = () => {
       let progress = setProgress((value) => setLoading(value));
       const { loadCharacter } = setCharacter(renderer, scene, camera);
 
+      const handleResizeListener = () => {
+        if (characterScene) {
+          handleResize(renderer, camera, canvasDiv, characterScene);
+        }
+      };
+
       loadCharacter().then((gltf) => {
         if (gltf) {
           const animations = setAnimations(gltf);
           hoverDivRef.current && animations.hover(gltf, hoverDivRef.current);
           mixer = animations.mixer;
-          let character = gltf.scene;
-          setChar(character);
-          scene.add(character);
-          headBone = character.getObjectByName("spine006") || null;
-          screenLight = character.getObjectByName("screenlight") || null;
+          scene.add(gltf.scene);
+          characterScene = gltf.scene;
+          headBone = gltf.scene.getObjectByName("spine006") || null;
+          screenLight = gltf.scene.getObjectByName("screenlight") || null;
           progress.loaded().then(() => {
             setTimeout(() => {
               light.turnOnLights();
               animations.startIntro();
             }, 2500);
           });
-          window.addEventListener("resize", () =>
-            handleResize(renderer, camera, canvasDiv, character)
-          );
+          window.addEventListener("resize", handleResizeListener);
         }
       });
 
@@ -130,9 +133,7 @@ const Scene = () => {
         clearTimeout(debounce);
         scene.clear();
         renderer.dispose();
-        window.removeEventListener("resize", () =>
-          handleResize(renderer, camera, canvasDiv, character!)
-        );
+        window.removeEventListener("resize", handleResizeListener);
         if (canvasDiv.current) {
           canvasDiv.current.removeChild(renderer.domElement);
         }
@@ -143,7 +144,7 @@ const Scene = () => {
         }
       };
     }
-  }, []);
+  }, [setLoading]);
 
   return (
     <>

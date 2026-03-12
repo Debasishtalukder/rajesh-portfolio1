@@ -22,11 +22,10 @@ const setCharacter = (
         );
         const blobUrl = URL.createObjectURL(new Blob([encryptedBlob]));
 
-        let character: THREE.Object3D;
         loader.load(
           blobUrl,
           async (gltf) => {
-            character = gltf.scene;
+            const character = gltf.scene;
             await renderer.compileAsync(character, camera, scene);
             character.traverse((child: any) => {
               if (child.isMesh) {
@@ -53,8 +52,8 @@ const setCharacter = (
             resolve(gltf);
             setCharTimeline(character, camera);
             setAllTimeline();
-            character!.getObjectByName("footR")!.position.y = 3.36;
-            character!.getObjectByName("footL")!.position.y = 3.36;
+            character.getObjectByName("footR")!.position.y = 3.36;
+            character.getObjectByName("footL")!.position.y = 3.36;
 
             // Monitor scale is handled by GsapScroll.ts animations
 

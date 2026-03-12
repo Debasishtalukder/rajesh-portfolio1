@@ -4,7 +4,7 @@ import { useLoading } from "../context/LoadingProvider";
 
 import Marquee from "react-fast-marquee";
 
-const Loading = ({ }: { percent: number }) => {
+const Loading = ({ percent = 0 }: { percent?: number }) => {
   const { setIsLoading } = useLoading();
   const [loaded, setLoaded] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
